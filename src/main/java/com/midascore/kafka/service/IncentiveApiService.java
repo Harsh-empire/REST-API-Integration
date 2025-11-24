@@ -5,11 +5,12 @@ import com.midascore.kafka.model.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.RestTemplateResponseErrorHandler;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
 public class IncentiveApiService {
@@ -17,14 +18,12 @@ public class IncentiveApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(IncentiveApiService.class);
 
     private final RestTemplate restTemplate;
-    private final String incentiveApiUrl;
+    private final @NonNull String incentiveApiUrl;
 
     public IncentiveApiService(RestTemplate restTemplate,
                                @Value("${incentive.api.url:http://localhost:8080/incentive}") String incentiveApiUrl) {
         this.restTemplate = restTemplate;
-        this.incentiveApiUrl = incentiveApiUrl;
-        RestTemplateResponseErrorHandler errorHandler = new RestTemplateResponseErrorHandler();
-        this.restTemplate.setErrorHandler(errorHandler);
+        this.incentiveApiUrl = Objects.requireNonNull(incentiveApiUrl, "Incentive API URL must not be null");
     }
 
     public BigDecimal fetchIncentiveAmount(Transaction transaction) {
